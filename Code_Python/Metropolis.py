@@ -48,7 +48,7 @@ def random_number(pdf, par, a0, b0, size=1, maxIt=1000, n=50, tolF=1.e-7,
 
     Notes:
     - <a0> and <b0> define the support, i.e. cdf(a0) = 0 and cdf(b0) = 1.
-    - it stops if there is not root in the interval (likely due to an incorrect
+    - it stops if there is no root in the interval (likely due to an incorrect
       definition of the support).
     - returns the best value found (and print a warning) if the maximum number
       of iterations is reached.
@@ -56,9 +56,9 @@ def random_number(pdf, par, a0, b0, size=1, maxIt=1000, n=50, tolF=1.e-7,
       tolerance condition on the interval is satisfied.
     - <m> is actually used instead of 1 when generating random numbers from the
       uniform distribution. This avoids the problems associated with the finite
-      step-size used in the numerical integration. For instance, m = 0.99999 for
-      the example with function "pdf_random" and n = 100. The higher <n> and the
-      closer <m> will be to 1.
+      step-size used in the numerical integration. The higher <n> and the closer
+      <m> will be to 1 (for instance, using example "Random", m = 0.99999 when
+      n = 100).
     """
 
     # Generate random numbers in [0, m]
