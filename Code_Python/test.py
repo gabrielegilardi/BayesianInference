@@ -53,10 +53,8 @@ jumps
 
 Examples
 --------
-There are four examples: Random, Coin, Normal, and Coin_upd (see the code for
+There are four examples: Coin, Normal, Coin_upd, and Random (see the code for
 parameters and results).
-
-- Random: generation of random numbers from a generic pdf.
 
 - Coin: one parameter (theta), Bernoulli distribution as likelihood, beta
         distribution as prior, admit an analytical solution.
@@ -69,6 +67,8 @@ parameters and results).
 - Coin_upd: one parameter (theta), Bernoulli distribution as likelihood,
             uniform distribution as initial prior, previous posterior as
             successive prior.
+
+- Random: generation of random numbers from a generic pdf.
 
 References
 ----------
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     import seaborn as sns
 
-    from Metropolis import metropolis, random_number, prior_dist
+    from Metropolis import metropolis, random_number
 
     # To avoid the warning about log(0) when one of the probability is zero
     warnings.filterwarnings("ignore")
@@ -104,53 +104,12 @@ if __name__ == '__main__':
     # Seed the random generator
     np.random.seed(123)
 
-    # Generation of random numbers given the pdf
-    if (example == 'Random'):
-
-        def pdf_random(x, par):
-            """
-            Piece-wise pdf.
-            """
-            pdf = np.where((x > 0.0) * (x <= 1.0), 0.3 * x, 0.0)
-            pdf += np.where((x > 1.0) * (x <= 2.0), -0.2 * x + 0.5, 0.0)
-            pdf += np.where((x > 2.0) * (x <= 3.0), 0.1, 0.0)
-            pdf += np.where((x > 3.0) * (x <= 4.0), 0.1 * x - 0.2, 0.0)
-            pdf += np.where((x > 4.0) * (x <= 5.0), 0.2, 0.0)
-            pdf += np.where((x > 5.0) * (x <= 7.0), -0.1 * x + 0.7, 0.0)
-
-            return pdf
-
-        # Parameters
-        par = []
-        a0, b0 = -1.0, +8.0
-
-        # Randomly approximated pdf
-        n_data = 50000
-        data = random_number(pdf_random, par, a0, b0, size=n_data, n=1000)
-
-        # Real pdf
-        xx = np.linspace(a0, b0, 1000)
-        yy = pdf_random(xx, par)
-
-        # Plot
-        plt.plot(xx, yy, label='Real')
-        plt.hist(data, 100, histtype="step", density=True, label='Random')
-        plt.xlabel('x')
-        plt.xticks(np.arange(-1, 9, step=1))
-        plt.xlim(-1, 8)
-        plt.ylabel('pdf')
-        plt.yticks(np.arange(0, 0.4, step=0.05))
-        plt.ylim(0, 0.35)
-        plt.grid(b=True)
-        plt.legend()
-        plt.show()
-
     # Coin flip example:
     # - one parameter (the probability tail comes up)
     # - Bernoulli distribution as likelihood
     # - beta distribution as prior
     # - admit an analytical solution
-    elif (example == 'Coin'):
+    if (example == 'Coin'):
 
         def pdf_coin(x, par):
             """
@@ -380,10 +339,6 @@ if __name__ == '__main__':
     # - Bernoulli distribution as likelihood
     # - uniform distribution as initial prior
     # - previous posterior as successive prior
-    #
-    # The mean of the posterior should tend to the probability head comes up,
-    # i.e. (1-par[0]), while its standard deviation should become smaller and
-    # smaller.
     elif (example == 'Coin_upd'):
 
         def pdf_coin_upd(x, par):
@@ -393,7 +348,7 @@ if __name__ == '__main__':
             theta = par[0]
             pdf = np.where(x, theta, 1.0-theta)
 
-            return  pdf
+            return pdf
 
         # Parameters
         likelihood = pdf_coin_upd
@@ -409,7 +364,14 @@ if __name__ == '__main__':
         YY = np.ones(len(XX))
         plt.plot(XX, YY, label='init')
 
-        # Perform n_steps
+        # The mean of the posterior should tend to the probability that head
+        # comes up, i.e. 0.37, while its standard deviation should become
+        # smaller and smaller.
+        #
+        # Results (after 15 steps):
+        # - head freq. = 36.4%
+        # - accepted jumps = 24.0%
+        # - <theta> mean and std = 0.362, 0.020
         tot_heads = 0
         tot_data = 0
         n_steps = 15
@@ -456,6 +418,47 @@ if __name__ == '__main__':
         plt.yticks(np.linspace(0, 24, num=7))
         plt.ylim(0, 24)
         plt.axvline(1.0 - par[0], c='k', ls='--')
+        plt.grid(b=True)
+        plt.legend()
+        plt.show()
+
+    # Generation of random numbers given the pdf
+    elif (example == 'Random'):
+
+        def pdf_random(x, par):
+            """
+            Piece-wise pdf.
+            """
+            pdf = np.where((x > 0.0) * (x <= 1.0), 0.3 * x, 0.0)
+            pdf += np.where((x > 1.0) * (x <= 2.0), -0.2 * x + 0.5, 0.0)
+            pdf += np.where((x > 2.0) * (x <= 3.0), 0.1, 0.0)
+            pdf += np.where((x > 3.0) * (x <= 4.0), 0.1 * x - 0.2, 0.0)
+            pdf += np.where((x > 4.0) * (x <= 5.0), 0.2, 0.0)
+            pdf += np.where((x > 5.0) * (x <= 7.0), -0.1 * x + 0.7, 0.0)
+
+            return pdf
+
+        # Parameters
+        par = []
+        a0, b0 = -1.0, +8.0
+
+        # Randomly approximated pdf
+        n_data = 50000
+        data = random_number(pdf_random, par, a0, b0, size=n_data, n=1000)
+
+        # Real pdf
+        xx = np.linspace(a0, b0, 1000)
+        yy = pdf_random(xx, par)
+
+        # Plot
+        plt.plot(xx, yy, label='Real')
+        plt.hist(data, 100, histtype="step", density=True, label='Random')
+        plt.xlabel('x')
+        plt.xticks(np.arange(-1, 9, step=1))
+        plt.xlim(-1, 8)
+        plt.ylabel('pdf')
+        plt.yticks(np.arange(0, 0.4, step=0.05))
+        plt.ylim(0, 0.35)
         plt.grid(b=True)
         plt.legend()
         plt.show()

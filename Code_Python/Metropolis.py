@@ -123,7 +123,7 @@ def random_number(pdf, par, a0, b0, size=1, maxIt=1000, n=50, tolF=1.e-7,
 def prior_dist(prior, x):
     """
     Returns the pdf(x) for the specified prior.
-    
+
     Notes:
     - <prior> is a list with structure [name, par1, par2, ...].
     - <x> is a scalar.

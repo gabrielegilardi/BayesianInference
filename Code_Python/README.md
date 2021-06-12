@@ -6,7 +6,7 @@
 
 - Likelihood (pdf) can be defined as an arbitrary function with any number of independent parameters.
 
-- Prior functions are defined using a list of list, and can be any pdf from function "prior_dist" in file "Metropolis.py" (other priors can be easily added).
+- Prior functions are defined using a list of list, and can be any pdf from function *prior_dist* in file *Metropolis.py* (other priors can be easily added).
 
 - Jumps in the Metropolis-Hastings algorithm are proposed using a normal   distribution of the parameters.
 
@@ -46,27 +46,75 @@
 
 ## Examples
 
-There are four examples: **Random**, **Coin**, **Normal**, and **Coin_upd** (see *test.py* for the specific parameters and full results). A brief description and the resulting plots are shown below.
-
-**Random:**
-
-Generation of random numbers from a generic pdf.
-![Example_Random](Example_Random.png)
+There are four examples: **Coin**, **Normal**, **Coin_upd**, and **Random**, (see *test.py* for the specific parameters and results). A brief description and the resulting plots are shown below.
 
 **Coin:**
 
 One parameter (theta), Bernoulli distribution as likelihood, beta distribution as prior, admit an analytical solution.
+
+```python
+# Numerical results:
+# - accepted jumps = 52.9%
+# - <theta> mean and std = 0.289, 0.057
+
+# Analytical results:
+# - <theta> mean and std (anal.) = 0.288, 0.055
+```
+
 ![Example_Coin](Example_Coin.png)
 
 **Normal:**
 
-Two parameters (mean and standard deviation), normal distribution as likelihood, normal distribution as prior for the mean, gamma distribution as prior for the standard deviation, solution also checked with `pymc3`.
+Two parameters (mean and standard deviation), normal distribution as likelihood, normal distribution as prior for the mean, gamma distribution as prior for the standard deviation, solution checked with `pymc3`.
+
+```python
+# Numerical results:
+# - accepted jumps = 52.8%
+# - <mu> mean and std = -1.182, 0.230
+# - <sigma> mean and std = 0.968, 0.198
+
+# Numerical (pymc3) results:
+# - start point =  {'mu': array(2.0), 'sigma': array(5.0)}
+# - <mu> mean and std = -1.188, 0.224
+# - <sigma> mean and std = 0.972, 0.202
+```
+
 ![Example_Normal](Example_Normal.png)
 
 **Coin_upd:**
 
-One parameter (theta), Bernoulli distribution as likelihood, uniform distribution as initial prior, previous posterior as successive prior.
+One parameter (theta), Bernoulli distribution as likelihood, uniform distribution as initial prior, previous posterior as successive prior. This example is the same as **Coin** but the resulting posterior is used as prior for the next update. The mean of the posterior should tend to the probability that head comes up, i.e. `0.37`, while its standard deviation should become smaller and smaller.
+
+```python
+# Numerical results (after 15 steps):
+# - head freq. = 36.4%
+# - accepted jumps = 24.0%
+# - <theta> mean and std = 0.362, 0.020
+```
+
 ![Example_Coin_upd](Example_Coin_upd.png)
+
+**Random:**
+
+A generic pdf (a piece-wise function in the example) is correctly approximated using 50000 randomly generated numbers.
+
+```python
+# Piece-wise function:
+#
+# pdf =  0.0                        in [-inf, 0]
+# pdf =  0.3 * x                    in (0, 1]
+# pdf = -0.2 * x + 0.5              in (1, 2]
+# pdf =  0.1                        in (2, 3]
+# pdf =  0.1 * x - 0.2              in (3, 4]
+# pdf =  0.2                        in (4, 5]
+# pdf = -0.1 * x + 0.7              in (5, 7]
+# pdf =  0.0                        in (7, +inf]
+#
+# The integral in [-inf, +inf] is 1.
+```
+
+![Example_Random](Example_Random.png)
+
 
 ## References
 

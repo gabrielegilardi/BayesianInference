@@ -59,10 +59,8 @@ save_res
 
 Examples
 --------
-There are three examples: Random, Coin, and Normal (see the code for parameters
+There are three examples: Coin, Normal, and Random (see the code for parameters
 and results).
-
-- Random: generation of random numbers from a generic pdf.
 
 - Coin: one parameter (theta), Bernoulli distribution as likelihood, beta
         distribution as prior, admit an analytical solution.
@@ -70,6 +68,8 @@ and results).
 - Normal: two parameters (mean and standard deviation), normal distribution
           as likelihood, normal distribution as prior for the mean, gamma
           distribution as prior for the standard deviation.
+
+- Random: generation of random numbers from a generic pdf.
 
 References
 ----------
@@ -136,34 +136,6 @@ double stdev(double a[], int start, int end)
 }
 
 
-/* Piece-wise pdf (example "Random") */
-double pdf_random(double x, double par[])
-{
-    double pdf = 0.0;
-
-    if (x > 0.0 && x <= 1.0) {
-        pdf = 0.3 * x;
-    }
-    else if (x > 1.0 && x <= 2.0) {
-        pdf = -0.2 * x + 0.5;
-    }
-    else if (x > 2.0 && x <= 3.0) {
-        pdf = 0.1;
-    }
-    else if (x > 3.0 && x <= 4.0) {
-        pdf = 0.1 * x - 0.2;
-    }
-    else if (x > 4.0 && x <= 5.0) {
-        pdf = 0.2;
-    }
-    else if (x > 5.0 && x <= 7.0) {
-        pdf = -0.1 * x + 0.7;
-    }
-
-    return pdf;
-}
-
-
 /* Bernoulli distribution (example "Coin") */
 double pdf_coin(double x, double par[])
 {
@@ -193,6 +165,34 @@ double pdf_normal(double x, double par[])
 }
 
 
+/* Piece-wise pdf (example "Random") */
+double pdf_random(double x, double par[])
+{
+    double pdf = 0.0;
+
+    if (x > 0.0 && x <= 1.0) {
+        pdf = 0.3 * x;
+    }
+    else if (x > 1.0 && x <= 2.0) {
+        pdf = -0.2 * x + 0.5;
+    }
+    else if (x > 2.0 && x <= 3.0) {
+        pdf = 0.1;
+    }
+    else if (x > 3.0 && x <= 4.0) {
+        pdf = 0.1 * x - 0.2;
+    }
+    else if (x > 4.0 && x <= 5.0) {
+        pdf = 0.2;
+    }
+    else if (x > 5.0 && x <= 7.0) {
+        pdf = -0.1 * x + 0.7;
+    }
+
+    return pdf;
+}
+
+
 /* Main function */
 int main(int argc, char **argv) 
 {
@@ -215,31 +215,12 @@ int main(int argc, char **argv)
     // Seed the random generator
     rnd("seed", double(123));
 
-    // Generation of random numbers given the pdf
-    if (example == "Random") {
-
-        // Parameters
-        par = NULL;
-        a0 = -1.0;
-        b0 = +8.0;
-
-        // Randomly approximated pdf
-        n_data = 50000;
-        data = new double [n_data];
-        for (int i=0; i<n_data; i++) {
-            data[i] = random_number(pdf_random, par, a0, b0, 100, 50);
-        }
-
-        // Save results
-        save_res = "res_random.txt";
-    }
-
     // Coin flip example:
     // - one parameter (the probability tail comes up)
     // - Bernoulli distribution as likelihood
     // - beta distribution as prior
     // - admit an analytical solution
-    else if (example == "Coin") {
+    if (example == "Coin") {
 
         // Generate data (0 = tail, 1 = head)
         likelihood = pdf_coin;
@@ -352,6 +333,25 @@ int main(int argc, char **argv)
         // the python version):
         // - <mu> mean and std = -1.210, 0.171
         // - <sigma> mean and std = 0.730, 0.156
+    }
+
+    // Generation of random numbers given the pdf
+    else if (example == "Random") {
+
+        // Parameters
+        par = NULL;
+        a0 = -1.0;
+        b0 = +8.0;
+
+        // Randomly approximated pdf
+        n_data = 50000;
+        data = new double [n_data];
+        for (int i=0; i<n_data; i++) {
+            data[i] = random_number(pdf_random, par, a0, b0, 100, 50);
+        }
+
+        // Save results
+        save_res = "res_random.txt";
     }
 
     else {
